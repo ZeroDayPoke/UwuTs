@@ -12,12 +12,12 @@ import SignUp from "./pages/SignUp";
 function App() {
   const [selectedItem, setSelectedItem] = useState("");
 
-  const primaryItems = ["Home", "About", "Contact"];
-  const secondaryItems = ["Help", "Login", "SignUp"];
+  const primaryItems = ["Home", "About", "Contact", "Help"];
+  const secondaryItems = ["Logout", "Login", "SignUp"];
   const logo = "./favicon.ico";
   const leftFooterItems = ["Terms", "Privacy"];
   const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
-  const sidePaneItems = ["Profile", "Settings", "Logout"];
+  const sidePaneItems = primaryItems.concat(secondaryItems);
 
   const onItemSelect = (item: string, index: number) => {
     console.log(item, index);
