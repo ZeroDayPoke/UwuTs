@@ -14,7 +14,7 @@ function App() {
 
   const primaryItems = ["Home", "About", "Contact", "Help"];
   const secondaryItems = ["Logout", "Login", "SignUp"];
-  const logo = "./favicon.ico";
+  const logo = "../logo.png";
   const leftFooterItems = ["Terms", "Privacy"];
   const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
   const sidePaneItems = primaryItems.concat(secondaryItems);
