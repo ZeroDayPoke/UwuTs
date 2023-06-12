@@ -47,6 +47,7 @@ router.get("/", (req, res) => {
 // Signup route
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
+  console.log(req.body);
 
   try {
     const user = await User.create({ name, email, password });

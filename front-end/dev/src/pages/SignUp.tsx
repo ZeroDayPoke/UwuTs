@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function SignUp() {
-  const [username, setUsername] = useState("");
+  const [name, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ function SignUp() {
     
     // Create a new user object
     const newUser = {
-      username,
+      name,
       password,
       email,
     };
@@ -42,7 +42,7 @@ function SignUp() {
           Username:
           <input
             type="text"
-            value={username}
+            value={name}
             onChange={(e) => setUsername(e.target.value)}
           />
         </label>
