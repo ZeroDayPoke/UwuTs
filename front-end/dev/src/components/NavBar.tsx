@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Navbar, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 interface NavBarProps {
   logo: string;
@@ -10,7 +10,13 @@ interface NavBarProps {
   selectedItem?: string;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ logo, primaryItems, secondaryItems, onItemSelect, selectedItem }) => {
+const NavBar: React.FC<NavBarProps> = ({
+  logo,
+  primaryItems,
+  secondaryItems,
+  onItemSelect,
+  selectedItem,
+}) => {
   const handleClick = (item: string, index: number) => {
     onItemSelect(item, index);
   };
@@ -24,14 +30,26 @@ const NavBar: React.FC<NavBarProps> = ({ logo, primaryItems, secondaryItems, onI
       <Navbar.Collapse id="navbar-nav-dropdown">
         <Nav className="mr-auto">
           {primaryItems.map((item, index) => (
-            <Nav.Link as={Link} key={item} to={"/" + item.toLowerCase()} onClick={() => handleClick(item, index)} active={selectedItem === item}>
+            <Nav.Link
+              as={Link}
+              key={item}
+              to={"/" + item.toLowerCase()}
+              onClick={() => handleClick(item, index)}
+              active={selectedItem === item}
+            >
               {item}
             </Nav.Link>
           ))}
         </Nav>
         <Nav className="ml-auto">
           {secondaryItems.map((item, index) => (
-            <Nav.Link as={Link} key={item} to={"/" + item.toLowerCase()} onClick={() => handleClick(item, index)} active={selectedItem === item}>
+            <Nav.Link
+              as={Link}
+              key={item}
+              to={"/" + item.toLowerCase()}
+              onClick={() => handleClick(item, index)}
+              active={selectedItem === item}
+            >
               {item}
             </Nav.Link>
           ))}
