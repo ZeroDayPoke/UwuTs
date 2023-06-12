@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [Email, setEmail] = useState("");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
@@ -14,11 +14,11 @@ function SignUp() {
     const newUser = {
       username,
       password,
-      email: Email
+      email,
     };
   
-    // Send a POST request to the /users endpoint
-    const response = await fetch('/api/users', {
+    // Send a POST request to the /users/signup endpoint
+    const response = await fetch('http://localhost:3000/users/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ function SignUp() {
           Email:
           <input
             type="text"
-            value={Email}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>

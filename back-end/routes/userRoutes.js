@@ -1,24 +1,32 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import User from "../models/User";
+import User from "../models/User.js";
 import session from "express-session";
-import MySQLStoreModule from "connect-mysql-session";
-const MySQLStore = MySQLStoreModule(session);
+import Sequelize from "sequelize";
+import ConnectSessionSequelize from "connect-session-sequelize";
 
-const sessionStore = new MySQLStore({
-    host: 'localhost',
-    port: 3306,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    clearExpired: true,
-    checkExpirationInterval: 900000,
-    expiration: 86400000,
-    createDatabaseTable: true,
-    connectionLimit: 1,
-    endConnectionOnClose: true,
-    charset: 'utf8mb4_bin',
-});
+const SessionStore = ConnectSessionSequelize(session.Store);
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
+    host: "localhost",
+    dialect: "mysql",
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+    define: {
+      timestamps: false,
+    },
+  }
+);
+
+const sessionStore = new SessionStore({ db: sequelize });
 
 const router = express.Router();
 

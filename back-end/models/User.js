@@ -1,6 +1,6 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const bcrypt = require('bcrypt');
-const db = require('../config/database');
+import { DataTypes } from 'sequelize';
+import bcrypt from 'bcrypt';
+import db from '../config/database.js';
 
 const User = db.define('User', {
     name: {
@@ -29,4 +29,4 @@ const User = db.define('User', {
     }
 });
 
-module.exports = User;
+export default User;

@@ -1,11 +1,15 @@
-const db = require('./config/database');
-const User = require('./models/User');
+import dotenv from 'dotenv';
+import db from './config/database.js';
+import express from 'express';
+import UserModel from './models/User.js';
+import userRoutes from './routes/userRoutes.js';
+import cors from 'cors';
 
-const express = require('express');
 const app = express();
 
-const userRoutes = require('./routes/userRoutes');
+dotenv.config();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
