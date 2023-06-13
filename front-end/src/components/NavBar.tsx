@@ -22,11 +22,12 @@ const NavBar: React.FC<NavBarProps> = ({
   const handleClick = async (item: string, index: number) => {
     onItemSelect(item, index);
     if (item === "Logout") {
-      const response = await fetch("http://localhost:3100/logout", {
+      const response = await fetch("http://localhost:3100/users/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
       });
 
       if (response.ok) {

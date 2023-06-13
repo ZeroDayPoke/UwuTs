@@ -1,26 +1,50 @@
 import dotenv from 'dotenv';
-import db from './config/database.js';
 import express from 'express';
-import UserModel from './models/User.js';
-import userRoutes from './routes/userRoutes.js';
+import session from 'express-session';
+import Sequelize from 'sequelize';
+import ConnectSessionSequelize from 'connect-session-sequelize';
 import cors from 'cors';
 
-const app = express();
+import UserRoutes from './routes/userRoutes.js';
+import db from './config/database.js';
 
 dotenv.config();
 
-app.use(cors());
+const SessionStore = ConnectSessionSequelize(session.Store);
+
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: 'localhost',
+  dialect: 'mysql',
+});
+
+const sessionStore = new SessionStore({ db: sequelize });
+
+const app = express();
+
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/users', userRoutes);
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000,  // 30 days
+    },
+  }),
+);
 
-app.listen(3100, () => console.log('Server started on port 3000'));
+app.use('/users', UserRoutes);
+
+app.listen(3100, () => console.log('Server started on port 3100'));
 
 db.authenticate()
-    .then(() => console.log('Database connected...'))
-    .catch(err => console.log('Error: ' + err));
+  .then(() => console.log('Database connected...'))
+  .catch(err => console.log('Error: ' + err));
 
 db.sync()
-    .then(() => console.log('Table created...'))
-    .catch(err => console.log('Error: ' + err));
+  .then(() => console.log('Table created...'))
+  .catch(err => console.log('Error: ' + err));

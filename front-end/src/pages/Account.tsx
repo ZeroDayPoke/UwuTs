@@ -12,9 +12,9 @@ const Account = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:3100/users/account");
+        const response = await fetch("http://localhost:3100/users/account", { credentials: 'include' });
         if (response.status === 401) {
-          setError("Not logged in");
+          setError("Login required");
           return;
         }
         const user = await response.json();

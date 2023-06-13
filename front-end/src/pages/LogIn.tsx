@@ -15,6 +15,8 @@ function LogIn() {
       password,
     };
 
+    console.log("Sending login request with info:", loginInfo);
+
     // Send a POST request to the /login endpoint
     const response = await fetch("http://localhost:3100/users/login", {
       method: "POST",
@@ -22,7 +24,10 @@ function LogIn() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginInfo),
+      credentials: 'include',
     });
+
+    console.log("Received response:", response);
 
     if (response.ok) {
       console.log("User successfully logged in");

@@ -1,43 +1,8 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
-import session from "express-session";
-import Sequelize from "sequelize";
-import ConnectSessionSequelize from "connect-session-sequelize";
-
-const SessionStore = ConnectSessionSequelize(session.Store);
-
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASS,
-  {
-    host: "localhost",
-    dialect: "mysql",
-    pool: {
-      max: 5,
-      min: 0,
-      acquire: 30000,
-      idle: 10000,
-    },
-    define: {
-      timestamps: false,
-    },
-  }
-);
-
-const sessionStore = new SessionStore({ db: sequelize });
 
 const router = express.Router();
-
-router.use(
-  session({
-    secret: "secret-key",
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
 
 // Home route
 router.get("/", (req, res) => {
@@ -47,7 +12,6 @@ router.get("/", (req, res) => {
 // Signup route
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
-  console.log(req.body);
 
   try {
     const user = await User.create({ name, email, password });
@@ -98,7 +62,7 @@ router.post("/logout", (req, res) => {
 // Account route
 router.get("/account", (req, res) => {
   if (!req.session.user) {
-    return res.status(401).send("Not logged in");
+    return res.status(401).send("No Session");
   }
 
   const { password, ...userWithoutPassword } = req.session.user;
