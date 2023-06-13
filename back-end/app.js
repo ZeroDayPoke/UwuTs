@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
-import Sequelize from 'sequelize';
 import ConnectSessionSequelize from 'connect-session-sequelize';
 import cors from 'cors';
 
@@ -12,12 +11,7 @@ dotenv.config();
 
 const SessionStore = ConnectSessionSequelize(session.Store);
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-  host: 'localhost',
-  dialect: 'mysql',
-});
-
-const sessionStore = new SessionStore({ db: sequelize });
+const sessionStore = new SessionStore({ db: db });
 
 const app = express();
 
