@@ -1,15 +1,15 @@
 import { useState } from "react";
-import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NavBar, Footer, SidePane } from "./components";
 import { Home, About, Contact, SignUp, LogIn, Account } from "./pages";
+import "./App.css";
 
 function App() {
   const [selectedItem, setSelectedItem] = useState("");
 
+  const logo = "./src/assets/logo.png";
   const primaryItems = ["Home", "About", "Contact", "Help"];
   const secondaryItems = ["Logout", "Login", "SignUp", "Account"];
-  const logo = "../logo.png";
   const leftFooterItems = ["Terms", "Privacy"];
   const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
   const sidePaneItems = primaryItems.concat(secondaryItems);
