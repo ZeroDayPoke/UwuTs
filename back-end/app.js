@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/users', userRoutes);
 
-app.listen(3000, () => console.log('Server started on port 3000'));
+app.listen(3100, () => console.log('Server started on port 3000'));
 
 db.authenticate()
     .then(() => console.log('Database connected...'))
