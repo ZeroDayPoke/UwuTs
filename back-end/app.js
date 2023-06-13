@@ -21,7 +21,7 @@ const sessionStore = new SessionStore({ db: sequelize });
 
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173', 'https://tulsahousesales.com'];
+const allowedOrigins = ['https://tulsahousesales.com', 'http://localhost:5173'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -33,6 +33,7 @@ app.use(cors({
   },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

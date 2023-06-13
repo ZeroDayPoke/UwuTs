@@ -18,7 +18,7 @@ function LogIn() {
     console.log("Sending login request with info:", loginInfo);
 
     // Send a POST request to the /login endpoint
-    const response = await fetch("http://localhost:3100/api/users/login", {
+    const response = await fetch("http://localhost:3100/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

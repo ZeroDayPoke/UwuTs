@@ -18,7 +18,7 @@ function SignUp() {
     };
 
     // Send a POST request to the /users/signup endpoint
-    const response = await fetch("http://localhost:3100/api/users/signup", {
+    const response = await fetch("http://localhost:3100/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
