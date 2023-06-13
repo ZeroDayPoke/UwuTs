@@ -7,7 +7,7 @@ function SignUp() {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     
     // Create a new user object
