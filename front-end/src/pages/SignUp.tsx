@@ -9,28 +9,28 @@ function SignUp() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    
+
     // Create a new user object
     const newUser = {
       name,
       password,
       email,
     };
-  
+
     // Send a POST request to the /users/signup endpoint
-    const response = await fetch('http://localhost:3100/users/signup', {
-      method: 'POST',
+    const response = await fetch("http://localhost:3100/users/signup", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(newUser)
+      body: JSON.stringify(newUser),
     });
-  
+
     if (response.ok) {
-      console.log('User successfully created');
-      navigate('/');
+      console.log("User successfully created");
+      navigate("/");
     } else {
-      console.log('Error creating user');
+      console.log("Error creating user");
     }
   };
 
@@ -44,6 +44,7 @@ function SignUp() {
             type="text"
             value={name}
             onChange={(e) => setUsername(e.target.value)}
+            autoComplete="username"
           />
         </label>
         <label>
@@ -52,6 +53,7 @@ function SignUp() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
           />
         </label>
         <label>
@@ -60,9 +62,10 @@ function SignUp() {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
           />
         </label>
-        <button type="submit">Sign Up</button>
+        <input type="submit" value="Sign Up" />
       </form>
     </div>
   );
