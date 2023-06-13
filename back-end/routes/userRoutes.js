@@ -101,7 +101,9 @@ router.get("/account", (req, res) => {
     return res.status(401).send("Not logged in");
   }
 
-  res.send(`Welcome, ${req.session.user.name}`);
+  const { password, ...userWithoutPassword } = req.session.user;
+
+  res.json(userWithoutPassword);
 });
 
 export default router;

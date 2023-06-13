@@ -1,6 +1,6 @@
 import React from "react";
 import { Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface NavBarProps {
   logo: string;
@@ -17,8 +17,25 @@ const NavBar: React.FC<NavBarProps> = ({
   onItemSelect,
   selectedItem,
 }) => {
-  const handleClick = (item: string, index: number) => {
+  const navigate = useNavigate();
+
+  const handleClick = async (item: string, index: number) => {
     onItemSelect(item, index);
+    if (item === "Logout") {
+      const response = await fetch("http://localhost:3100/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        console.log("User successfully logged out");
+        navigate("/");
+      } else {
+        console.log("Error logging out");
+      }
+    }
   };
 
   return (

@@ -8,12 +8,14 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SignUp from "./pages/SignUp";
+import LogIn from "./pages/LogIn";
+import Account from "./pages/Account";
 
 function App() {
   const [selectedItem, setSelectedItem] = useState("");
 
   const primaryItems = ["Home", "About", "Contact", "Help"];
-  const secondaryItems = ["Logout", "Login", "SignUp"];
+  const secondaryItems = ["Logout", "Login", "SignUp", "Account"];
   const logo = "../logo.png";
   const leftFooterItems = ["Terms", "Privacy"];
   const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
@@ -46,6 +48,8 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<LogIn />} />
+              <Route path="/account" element={<Account />} />
             </Routes>
           </div>
         </div>
