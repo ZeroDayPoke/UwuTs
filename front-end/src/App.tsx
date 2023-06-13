@@ -1,15 +1,8 @@
 import { useState } from "react";
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavBar from "./components/NavBar";
-import Footer from "./components/Footer";
-import SidePane from "./components/SidePane";
-import Home from "./pages/Home";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import SignUp from "./pages/SignUp";
-import LogIn from "./pages/LogIn";
-import Account from "./pages/Account";
+import { NavBar, Footer, SidePane } from "./components";
+import { Home, About, Contact, SignUp, LogIn, Account } from "./pages";
 
 function App() {
   const [selectedItem, setSelectedItem] = useState("");
