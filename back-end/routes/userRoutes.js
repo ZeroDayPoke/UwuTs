@@ -4,11 +4,6 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// Home route
-router.get("/", (req, res) => {
-  res.send("Home page");
-});
-
 // Signup route
 router.post("/signup", async (req, res) => {
   const { name, email, password } = req.body;
@@ -16,7 +11,7 @@ router.post("/signup", async (req, res) => {
   try {
     const user = await User.create({ name, email, password });
     req.session.user = user;
-    res.send("User created");
+    res.json({ message: "User created", isLoggedIn: true });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -41,7 +36,7 @@ router.post("/login", async (req, res) => {
     }
 
     req.session.user = user;
-    res.send("User logged in");
+    res.json({ message: "User logged in", isLoggedIn: true });
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
@@ -55,7 +50,7 @@ router.post("/logout", (req, res) => {
       return res.status(500).send("Server error");
     }
 
-    res.send("User logged out");
+    res.json({ message: "User logged out", isLoggedIn: false });
   });
 });
 
@@ -68,6 +63,12 @@ router.get("/account", (req, res) => {
   const { password, ...userWithoutPassword } = req.session.user;
 
   res.json(userWithoutPassword);
+});
+
+// Session status route
+router.get("/session-status", (req, res) => {
+  const isLoggedIn = req.session && req.session.user ? true : false;
+  res.json({ isLoggedIn });
 });
 
 export default router;

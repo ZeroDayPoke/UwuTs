@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function LogIn() {
+interface LogInProps {
+  onLogin: () => void;
+}
+
+function LogIn({ onLogin }: LogInProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -24,13 +28,14 @@ function LogIn() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginInfo),
-      credentials: 'include',
+      credentials: "include",
     });
 
     console.log("Received response:", response);
 
     if (response.ok) {
       console.log("User successfully logged in");
+      onLogin();
       navigate("/account");
     } else {
       console.log("Error logging in");
