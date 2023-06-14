@@ -4,8 +4,9 @@ import session from 'express-session';
 import ConnectSessionSequelize from 'connect-session-sequelize';
 import cors from 'cors';
 
-import UserRoutes from './routes/userRoutes.js';
 import db from './config/database.js';
+import UserRoutes from './routes/userRoutes.js';
+import HomeRoutes from './routes/homeRoutes.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use(
 );
 
 app.use('/users', UserRoutes);
+app.use('/homes', HomeRoutes);
 
 app.listen(3100, () => console.log('Server started on port 3100'));
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NavBar, Footer, SidePane } from "./components";
-import { Home, About, Contact, SignUp, LogIn, Account } from "./pages";
+import { Home, About, Contact, SignUp, LogIn, Account, Admin } from "./pages";
 import "./App.css";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 
   const logo = "./src/assets/logo.png";
   const primaryItems = ["Home", "About", "Contact", "Help"];
-  const secondaryItems = ["Logout", "Login", "SignUp", "Account"];
+  const secondaryItems = ["Logout", "Login", "SignUp", "Account", "Admin"];
   const leftFooterItems = ["Terms", "Privacy"];
   const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
   const sidePaneItems = primaryItems.concat(secondaryItems);
@@ -37,12 +37,13 @@ function App() {
           />
           <div className="main-view">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<LogIn />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
           </div>
         </div>
