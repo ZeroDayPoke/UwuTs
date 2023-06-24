@@ -30,20 +30,24 @@ router.get("/read/:id", async (req, res) => {
 
 // CREATE a home model
 router.post("/create", async (req, res) => {
-  const address = req.body;
+  const homeData = req.body;
 
   try {
     const newHome = await Home.create({
-      street: address.street,
-      city: address.city,
-      state: address.state,
-      zipcode: address.zipcode,
+      street: homeData.street,
+      city: homeData.city,
+      state: homeData.state,
+      zipcode: homeData.zipcode,
+      squareFootage: homeData.squareFootage,
+      yearBuilt: homeData.yearBuilt,
+      numberBathrooms: homeData.numberBathrooms,
+      numberBedrooms: homeData.numberBedrooms,
     });
 
     res.send({ valid: true, home: newHome });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Error saving the address" });
+    res.status(500).send({ error: "Error saving the home data" });
   }
 });
 

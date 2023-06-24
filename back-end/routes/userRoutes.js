@@ -6,10 +6,10 @@ const router = express.Router();
 
 // Signup route
 router.post("/signup", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
-    const user = await User.create({ name, email, password });
+    const user = await User.create({ name, email, password, phone });
     req.session.user = user;
     res.json({ message: "User created", isLoggedIn: true });
   } catch (err) {

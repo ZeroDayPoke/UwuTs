@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Form, Button, Container } from "react-bootstrap";
 
 function SignUp() {
   const [name, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -15,6 +17,7 @@ function SignUp() {
       name,
       password,
       email,
+      phone,
     };
 
     // Send a POST request to the /users/signup endpoint
@@ -24,7 +27,7 @@ function SignUp() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newUser),
-      credentials: 'include',
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -36,39 +39,50 @@ function SignUp() {
   };
 
   return (
-    <div className="SignUp">
+    <Container className="SignUp">
       <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Username:
-          <input
+      <Form onSubmit={handleSubmit}>
+        <Form.Group>
+          <Form.Label>Username:</Form.Label>
+          <Form.Control
             type="text"
             value={name}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
           />
-        </label>
-        <label>
-          Password:
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Password:</Form.Label>
+          <Form.Control
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-        </label>
-        <label>
-          Email:
-          <input
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Email:</Form.Label>
+          <Form.Control
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
           />
-        </label>
-        <input type="submit" value="Sign Up" />
-      </form>
-    </div>
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Phone:</Form.Label>
+          <Form.Control
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            autoComplete="phone"
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Sign Up
+        </Button>
+      </Form>
+    </Container>
   );
 }
 

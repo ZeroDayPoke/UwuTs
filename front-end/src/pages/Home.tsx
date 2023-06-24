@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home() {
   const [street, setStreet] = useState("");
@@ -47,73 +48,81 @@ function Home() {
 
   return (
     <div className="Home">
-      <h2>Add Home</h2>
+      <h2 className="my-3">Add Home</h2>
       <form onSubmit={handleSubmit}>
-        <label>
-          Street:
+        <div className="mb-3">
+          <label className="form-label">Street:</label>
           <input
             type="text"
+            className="form-control"
             value={street}
             onChange={(e) => setStreet(e.target.value)}
           />
-        </label>
-        <label>
-          City:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">City:</label>
           <input
             type="text"
+            className="form-control"
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
-        </label>
-        <label>
-          State:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">State:</label>
           <input
             type="text"
+            className="form-control"
             value={state}
             onChange={(e) => setState(e.target.value)}
           />
-        </label>
-        <label>
-          Zipcode:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Zipcode:</label>
           <input
             type="text"
+            className="form-control"
             value={zipcode}
             onChange={(e) => setZipcode(e.target.value)}
           />
-        </label>
-        <label>
-          Square Footage:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Square Footage:</label>
           <input
             type="number"
+            className="form-control"
             value={squareFootage}
             onChange={(e) => setSquareFootage(Number(e.target.value))}
           />
-        </label>
-        <label>
-          Year Built:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Year Built:</label>
           <input
             type="number"
+            className="form-control"
             value={yearBuilt}
             onChange={(e) => setYearBuilt(Number(e.target.value))}
           />
-        </label>
-        <label>
-          Number of Bathrooms:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Number of Bathrooms:</label>
           <input
             type="number"
+            className="form-control"
             value={numberBathrooms}
             onChange={(e) => setNumberBathrooms(Number(e.target.value))}
           />
-        </label>
-        <label>
-          Number of Bedrooms:
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Number of Bedrooms:</label>
           <input
             type="number"
+            className="form-control"
             value={numberBedrooms}
             onChange={(e) => setNumberBedrooms(Number(e.target.value))}
           />
-        </label>
-        <input type="submit" value="Add Home" />
+        </div>
+        <button type="submit" className="btn btn-primary">Add Home</button>
       </form>
     </div>
   );
