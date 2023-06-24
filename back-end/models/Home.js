@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
-import db from '../config/database.js';
+import db from "../config/database.js";
+import User from "./User.js";
 
 const Home = db.define("Home", {
   street: {
@@ -28,9 +29,47 @@ const Home = db.define("Home", {
     allowNull: false,
     validate: {
       notEmpty: true,
-      is: /^[0-9]{5}(-[0-9]{4})?$/, // Regex for zipcode
+      is: /^[0-9]{5}(-[0-9]{4})?$/,
     },
   },
+  squareFootage: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      isInt: true,
+    },
+  },
+  yearBuilt: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    validate: {
+      isInt: true,
+    },
+  },
+  numberBathrooms: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      isInt: true,
+      min: 1,
+    },
+  },
+  numberBedrooms: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+      isInt: true,
+      min: 1,
+    },
+  },
+});
+
+Home.belongsTo(User, {
+  foreignKey: "userId",
+  as: "homeowner",
 });
 
 export default Home;

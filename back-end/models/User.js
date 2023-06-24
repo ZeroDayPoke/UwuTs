@@ -4,14 +4,20 @@ import db from '../config/database.js';
 
 const User = db.define('User', {
     name: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     email: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
     password: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
+        allowNull: false
     },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: false
 }, {
     hooks: {
         beforeCreate: async (user) => {

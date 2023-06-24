@@ -6,6 +6,10 @@ function Home() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zipcode, setZipcode] = useState("");
+  const [squareFootage, setSquareFootage] = useState(0);
+  const [yearBuilt, setYearBuilt] = useState(1990);
+  const [numberBathrooms, setNumberBathrooms] = useState(1);
+  const [numberBedrooms, setNumberBedrooms] = useState(1);
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -17,6 +21,10 @@ function Home() {
       city,
       state,
       zipcode,
+      squareFootage,
+      yearBuilt,
+      numberBathrooms,
+      numberBedrooms,
     };
 
     // Send a POST request to the /homes endpoint
@@ -71,6 +79,38 @@ function Home() {
             type="text"
             value={zipcode}
             onChange={(e) => setZipcode(e.target.value)}
+          />
+        </label>
+        <label>
+          Square Footage:
+          <input
+            type="number"
+            value={squareFootage}
+            onChange={(e) => setSquareFootage(Number(e.target.value))}
+          />
+        </label>
+        <label>
+          Year Built:
+          <input
+            type="number"
+            value={yearBuilt}
+            onChange={(e) => setYearBuilt(Number(e.target.value))}
+          />
+        </label>
+        <label>
+          Number of Bathrooms:
+          <input
+            type="number"
+            value={numberBathrooms}
+            onChange={(e) => setNumberBathrooms(Number(e.target.value))}
+          />
+        </label>
+        <label>
+          Number of Bedrooms:
+          <input
+            type="number"
+            value={numberBedrooms}
+            onChange={(e) => setNumberBedrooms(Number(e.target.value))}
           />
         </label>
         <input type="submit" value="Add Home" />
