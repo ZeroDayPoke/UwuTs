@@ -6,6 +6,10 @@ interface Home {
   city: string;
   state: string;
   zipcode: string;
+  squareFootage: number;
+  yearBuilt: number;
+  numberBathrooms: number;
+  numberBedrooms: number;
 }
 
 function Admin() {
@@ -32,6 +36,10 @@ function Admin() {
                 <Card.Text>{home.street}</Card.Text>
                 <Card.Text>
                   {home.city}, {home.state} {home.zipcode}
+                  <h3>{home.squareFootage}</h3>
+                  <h3>{home.yearBuilt}</h3>
+                  <h3>{home.numberBathrooms}</h3>
+                  <h3>{home.numberBedrooms}</h3>
                 </Card.Text>
               </Card.Body>
             </Card>

@@ -40,4 +40,16 @@ const User = db.define(
   }
 );
 
-export default User;
+const Role = db.define("Role", {
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+});
+
+const UserRole = db.define("UserRole", {});
+
+User.belongsToMany(Role, { through: UserRole });
+Role.belongsToMany(User, { through: UserRole });
+
+export { User, Role, UserRole };
