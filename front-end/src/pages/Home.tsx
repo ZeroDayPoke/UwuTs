@@ -1,3 +1,5 @@
+// ./src/pages/Home.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,6 +13,7 @@ function Home() {
   const [yearBuilt, setYearBuilt] = useState(1990);
   const [numberBathrooms, setNumberBathrooms] = useState(1);
   const [numberBedrooms, setNumberBedrooms] = useState(1);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,21 +31,26 @@ function Home() {
       numberBedrooms,
     };
 
-    // Send a POST request to the /homes endpoint
-    const response = await fetch("http://localhost:3100/homes/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newHome),
-      credentials: "include",
-    });
+    try {
+      // Send a POST request to the /homes endpoint
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/homes/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newHome),
+        credentials: "include",
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        throw new Error("Failed to create a new home.");
+      }
+
       console.log("Home successfully created");
       navigate("/");
-    } else {
-      console.log("Error creating home");
+    } catch (error) {
+      console.error("Error creating home:", error);
+      setError("An error occurred while creating the home. Please try again.");
     }
   };
 
@@ -50,6 +58,7 @@ function Home() {
     <div className="Home">
       <h2 className="my-3">Add Home</h2>
       <form onSubmit={handleSubmit}>
+        {error && <p>{error}</p>}
         <div className="mb-3">
           <label className="form-label">Street:</label>
           <input

@@ -10,7 +10,7 @@ router.get("/read", async (req, res) => {
     res.json(homes);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -19,12 +19,12 @@ router.get("/read/:id", async (req, res) => {
   try {
     const home = await Home.findByPk(req.params.id);
     if (!home) {
-      return res.status(404).send("Home not found");
+      return res.status(404).json({ error: "Home not found" });
     }
     res.json(home);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server error");
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -42,12 +42,13 @@ router.post("/create", async (req, res) => {
       yearBuilt: homeData.yearBuilt,
       numberBathrooms: homeData.numberBathrooms,
       numberBedrooms: homeData.numberBedrooms,
+      ownerId: homeData.ownerId,
     });
 
-    res.send({ valid: true, home: newHome });
+    res.json({ valid: true, home: newHome });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Error saving the home data" });
+    res.status(500).json({ error: "Error saving the home data" });
   }
 });
 
@@ -61,13 +62,13 @@ router.put("/update/:id", async (req, res) => {
     });
 
     if (!updatedHome[0]) {
-      return res.status(404).send("Home not found");
+      return res.status(404).json({ error: "Home not found" });
     }
 
-    res.send({ valid: true, home: updatedHome });
+    res.json({ valid: true, home: updatedHome });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Error updating the home" });
+    res.status(500).json({ error: "Error updating the home" });
   }
 });
 
@@ -81,13 +82,13 @@ router.delete("/delete/:id", async (req, res) => {
     });
 
     if (!deletedHome) {
-      return res.status(404).send("Home not found");
+      return res.status(404).json({ error: "Home not found" });
     }
 
-    res.send({ valid: true, message: "Home deleted" });
+    res.json({ valid: true, message: "Home deleted" });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ error: "Error deleting the home" });
+    res.status(500).json({ error: "Error deleting the home" });
   }
 });
 

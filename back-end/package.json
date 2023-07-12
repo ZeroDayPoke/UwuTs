@@ -8,7 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "migrate": "sequelize-cli db:migrate",
+    "seed": "sequelize-cli db:seed:all"
   },
   "repository": {
     "type": "git",
@@ -24,11 +26,12 @@
     "bcrypt": "^5.1.0",
     "connect-session-sequelize": "^7.1.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.1.4",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "express-mysql-session": "^3.0.0",
     "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
     "mysql2": "^3.3.5",
+    "nodemailer": "^6.9.3",
     "sequelize": "^6.32.0",
     "sequelize-typescript": "^2.1.5"
   }

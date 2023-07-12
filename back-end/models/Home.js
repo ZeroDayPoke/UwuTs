@@ -1,6 +1,7 @@
+// ./models/Home.js
 import { DataTypes } from "sequelize";
 import db from "../config/database.js";
-import { User, Role, UserRole } from "./User.js";
+import { User } from "./User.js";
 
 const Home = db.define("Home", {
   street: {
@@ -65,6 +66,16 @@ const Home = db.define("Home", {
       min: 1,
     },
   },
+  userId: {
+    allowNull: true,
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
+  }
 });
 
 Home.belongsTo(User, {

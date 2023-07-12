@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+// frontend/src/App.tsx
+
+import { useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NavBar, Footer, SidePane } from "./components";
 import { Home, About, Contact, SignUp, LogIn, Account, Admin } from "./pages";
@@ -18,38 +20,47 @@ function App() {
     isLoggedIn ? userItems : guestItems
   );
 
-  const onItemSelect = async (item: string, index: number) => {
+  const onItemSelect = (item: string, index: number) => {
     console.log(item, index);
     setSelectedItem(item);
 
     if (item === "Logout") {
-      const response = await fetch("http://localhost:3100/users/logout", {
+      fetch("http://localhost:3100/users/logout", {
         method: "POST",
         credentials: "include",
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setIsLoggedIn(data.isLoggedIn);
-      }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => setIsLoggedIn(data.isLoggedIn))
+      .catch(error => console.error('There was a problem with your fetch operation: ', error));
     } else {
       checkSessionStatus();
     }
   };
 
   // Check session status function
-  const checkSessionStatus = async () => {
-    const response = await fetch("http://localhost:3100/users/session-status", {
+  const checkSessionStatus = useCallback(() => {
+    fetch("http://localhost:3100/users/session-status", {
       credentials: "include",
-    });
-    const data = await response.json();
-    setIsLoggedIn(data.isLoggedIn);
-  };
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => setIsLoggedIn(data.isLoggedIn))
+    .catch(error => console.error('There was a problem with your fetch operation: ', error));
+  }, []);
 
   // Check session status on initial load
   useEffect(() => {
     checkSessionStatus();
-  }, []);
+  }, [checkSessionStatus]);
 
   return (
     <Router>

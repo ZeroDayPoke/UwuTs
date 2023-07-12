@@ -1,6 +1,8 @@
+// ./models/User.js
+
 import { DataTypes } from "sequelize";
-import bcrypt from "bcrypt";
 import db from "../config/database.js";
+import crypto from 'crypto';
 
 const User = db.define(
   "User",
@@ -8,48 +10,52 @@ const User = db.define(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true,
+        isEmail: true,
+      },
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    verificationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    verificationTokenExpiration: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   },
-  {
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.password) {
-          const salt = await bcrypt.genSalt(10);
-          user.password = await bcrypt.hash(user.password, salt);
-        }
-      },
-    },
-  }
 );
 
-const Role = db.define("Role", {
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
+User.prototype.generateVerificationToken = function () {
+  this.verificationToken = crypto.randomBytes(32).toString('hex');
+  this.verificationTokenExpiration = Date.now() + 3600000;
+};
 
-const UserRole = db.define("UserRole", {});
-
-User.belongsToMany(Role, { through: UserRole });
-Role.belongsToMany(User, { through: UserRole });
-
-export { User, Role, UserRole };
+export { User };

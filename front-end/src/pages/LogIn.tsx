@@ -1,5 +1,8 @@
+// ./src/pages/LogIn.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api/user";
 
 interface LogInProps {
   onLogin: () => void;
@@ -8,6 +11,7 @@ interface LogInProps {
 function LogIn({ onLogin }: LogInProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -19,26 +23,14 @@ function LogIn({ onLogin }: LogInProps) {
       password,
     };
 
-    console.log("Sending login request with info:", loginInfo);
+    try {
+      await loginUser(loginInfo, "http://localhost:3100/users/login");
 
-    // Send a POST request to the /login endpoint
-    const response = await fetch("http://localhost:3100/users/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(loginInfo),
-      credentials: "include",
-    });
-
-    console.log("Received response:", response);
-
-    if (response.ok) {
-      console.log("User successfully logged in");
       onLogin();
       navigate("/account");
-    } else {
-      console.log("Error logging in");
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
     }
   };
 
@@ -64,6 +56,7 @@ function LogIn({ onLogin }: LogInProps) {
             autoComplete="current-password"
           />
         </label>
+        {error && <p>{error}</p>}
         <input type="submit" value="Log In" />
       </form>
     </div>

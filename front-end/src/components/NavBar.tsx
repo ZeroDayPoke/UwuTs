@@ -1,6 +1,8 @@
+// frontend/src/components/NavBar.tsx
+
 import React from "react";
 import { Navbar, Nav } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 interface NavBarProps {
   logo: string;
@@ -17,28 +19,6 @@ const NavBar: React.FC<NavBarProps> = ({
   onItemSelect,
   selectedItem,
 }) => {
-  const navigate = useNavigate();
-
-  const handleClick = async (item: string, index: number) => {
-    onItemSelect(item, index);
-    if (item === "Logout") {
-      const response = await fetch("http://localhost:3100/users/logout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        console.log("User successfully logged out");
-        navigate("/");
-      } else {
-        console.log("Error logging out");
-      }
-    }
-  };
-
   return (
     <Navbar bg="light" expand="lg">
       <Navbar.Brand href="#">
@@ -52,7 +32,7 @@ const NavBar: React.FC<NavBarProps> = ({
               as={Link}
               key={item}
               to={"/" + item.toLowerCase()}
-              onClick={() => handleClick(item, index)}
+              onClick={() => onItemSelect(item, index)}
               active={selectedItem === item}
             >
               {item}
@@ -65,7 +45,7 @@ const NavBar: React.FC<NavBarProps> = ({
               as={Link}
               key={item}
               to={"/" + item.toLowerCase()}
-              onClick={() => handleClick(item, index)}
+              onClick={() => onItemSelect(item, index)}
               active={selectedItem === item}
             >
               {item}

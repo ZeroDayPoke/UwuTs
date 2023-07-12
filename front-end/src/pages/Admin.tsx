@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
 import { Card, Row, Col } from "react-bootstrap";
-
-interface Home {
-  street: string;
-  city: string;
-  state: string;
-  zipcode: string;
-  squareFootage: number;
-  yearBuilt: number;
-  numberBathrooms: number;
-  numberBedrooms: number;
-}
+import { Home } from "../types";
 
 function Admin() {
   const [homes, setHomes] = useState<Home[]>([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchHomes = async () => {
-      const response = await fetch("http://localhost:3100/homes/read");
-      const data = await response.json();
-      setHomes(data);
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/homes/read`);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch homes.");
+        }
+
+        const data: Home[] = await response.json();
+        setHomes(data);
+      } catch (error) {
+        console.error(error);
+        setError("An error occurred while fetching homes.");
+      }
     };
 
     fetchHomes();
   }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="HomesList">

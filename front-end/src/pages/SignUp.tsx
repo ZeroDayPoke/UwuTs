@@ -1,3 +1,5 @@
+// ./src/pages/SignUp.tsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Container } from "react-bootstrap";
@@ -7,6 +9,7 @@ function SignUp() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -20,21 +23,26 @@ function SignUp() {
       phone,
     };
 
-    // Send a POST request to the /users/signup endpoint
-    const response = await fetch("http://localhost:3100/users/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newUser),
-      credentials: "include",
-    });
+    try {
+      // Send a POST request to the /users/signup endpoint
+      const response = await fetch("http://localhost:3100/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+        credentials: "include",
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        throw new Error("Failed to create a new user.");
+      }
+
       console.log("User successfully created");
       navigate("/");
-    } else {
-      console.log("Error creating user");
+    } catch (error) {
+      console.error("Error creating user:", error);
+      setError("Failed to sign up. Please try again.");
     }
   };
 

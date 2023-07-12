@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-
-interface User {
-  name: string;
-  email: string;
-}
+import { User } from "../types";
 
 const Account = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -13,20 +9,25 @@ const Account = () => {
     const fetchUser = async () => {
       try {
         const response = await fetch("http://localhost:3100/users/account", { credentials: 'include' });
-        if (response.status === 401) {
-          setError("Login required");
-          return;
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user information.");
         }
-        const user = await response.json();
+
+        const user: User = await response.json();
         setUser(user);
-      } catch (err) {
-        console.error(err);
-        setError("An error occurred");
+      } catch (error) {
+        console.error(error);
+        setError("An error occurred while fetching user information.");
       }
     };
 
     fetchUser();
   }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
