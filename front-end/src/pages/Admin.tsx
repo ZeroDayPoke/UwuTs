@@ -1,5 +1,7 @@
+// ./src/pages/Admin.tsx
+
 import { useEffect, useState } from "react";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Carousel } from "react-bootstrap";
 import { Home } from "../types";
 
 function Admin() {
@@ -33,9 +35,9 @@ function Admin() {
   return (
     <div className="HomesList">
       <h2>All Homes</h2>
-      <Row xs={1} md={3} className="g-4">
+      <Carousel>
         {homes.map((home, index) => (
-          <Col key={index}>
+          <Carousel.Item key={index}>
             <Card className="h-100">
               <Card.Body>
                 <Card.Text>{home.street}</Card.Text>
@@ -48,9 +50,9 @@ function Admin() {
                 </Card.Text>
               </Card.Body>
             </Card>
-          </Col>
+          </Carousel.Item>
         ))}
-      </Row>
+      </Carousel>
     </div>
   );
 }

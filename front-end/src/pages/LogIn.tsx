@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/user";
+import { loginUser } from "../api/userApi";
 
 interface LogInProps {
   onLogin: () => void;

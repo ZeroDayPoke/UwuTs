@@ -31,9 +31,9 @@ const Footer: React.FC<FooterProps> = ({ leftItems, rightItems, onItemSelect }) 
             <ul className="list-unstyled">
               {rightItems.map((item, index) => (
                 <li key={index}>
-                  <a href="#" onClick={() => handleClick(item, index)}>
+                  <button onClick={() => handleClick(item, index)}>
                     {item}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>

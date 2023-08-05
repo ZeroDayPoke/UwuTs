@@ -1,7 +1,7 @@
 // ./models/Home.js
 import { DataTypes } from "sequelize";
 import db from "../config/database.js";
-import { User } from "./User.js";
+import User from "./User.js";
 
 const Home = db.define("Home", {
   street: {
