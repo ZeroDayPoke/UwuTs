@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/userApi";
+import userApi from "../api/userApi";
 
 interface LogInProps {
   onLogin: () => void;
@@ -24,7 +24,7 @@ function LogIn({ onLogin }: LogInProps) {
     };
 
     try {
-      await loginUser(loginInfo, "http://localhost:3100/users/login");
+      await userApi.login(loginInfo, "http://localhost:3100/users/login");
 
       onLogin();
       navigate("/account");

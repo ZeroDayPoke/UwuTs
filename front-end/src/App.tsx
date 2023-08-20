@@ -38,29 +38,9 @@ function App() {
       .then(data => setIsLoggedIn(data.isLoggedIn))
       .catch(error => console.error('There was a problem with your fetch operation: ', error));
     } else {
-      checkSessionStatus();
+      console.log("Not logout");
     }
   };
-
-  // Check session status function
-  const checkSessionStatus = useCallback(() => {
-    fetch("http://localhost:3100/users/session-status", {
-      credentials: "include",
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => setIsLoggedIn(data.isLoggedIn))
-    .catch(error => console.error('There was a problem with your fetch operation: ', error));
-  }, []);
-
-  // Check session status on initial load
-  useEffect(() => {
-    checkSessionStatus();
-  }, [checkSessionStatus]);
 
   return (
     <Router>
@@ -86,7 +66,7 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route
                 path="/login"
-                element={<LogIn onLogin={checkSessionStatus} />}
+                element={<LogIn/>}
               />
               <Route path="/account" element={<Account />} />
               <Route path="/admin" element={<Admin />} />

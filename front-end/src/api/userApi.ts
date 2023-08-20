@@ -37,7 +37,6 @@ const userApi = {
           roles: response.data.roles,
           userId: response.data.id,
           email: response.data.email,
-          favorites: response.data.favorites || [],
         };
         return handleApiResponse({
           ...response,

@@ -37,29 +37,12 @@ export const logIn = async (req, res) => {
     const roles = user.Roles ? user.Roles.map((role) => role.name) : [];
     const id = user.id;
 
-    const user_strains = await User.findByPk(id, {
-      include: [
-        {
-          model: Strain,
-          as: "favorites",
-          through: {
-            attributes: [],
-          },
-          attributes: ["id"],
-        },
-      ],
-    });
-
-    const favorites = user_strains.favorites.map((strain) => strain.id);
-
-    logger.info(`User favorites: ${JSON.stringify(favorites)}`);
     res.json({
       message: "User logged in",
       token: accessToken,
       roles,
       id,
       email: user.email,
-      favorites,
     });
   } catch (err) {
     logger.error("Error logging in user: " + err.toString());
