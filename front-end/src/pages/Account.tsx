@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { User } from "../types";
+import userApi from "../api/userApi";
 
 const Account = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -8,7 +9,7 @@ const Account = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://localhost:3100/users/account", { credentials: 'include' });
+        const response = await userApi.getAccount();
 
         if (!response.ok) {
           throw new Error("Failed to fetch user information.");

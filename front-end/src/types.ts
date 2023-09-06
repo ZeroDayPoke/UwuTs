@@ -17,3 +17,9 @@ export interface Home {
     numberBathrooms: number;
     numberBedrooms: number;
 }
+
+export interface Testimonial {
+    author: string;
+    message: string;
+    image?: string;
+}

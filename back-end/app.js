@@ -7,6 +7,8 @@ import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import methodOverride from "method-override";
+import session from 'express-session';
+import ConnectSessionSequelize from 'connect-session-sequelize';
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
 
@@ -19,7 +21,24 @@ const __dirname = dirname(__filename);
 
 dotenv.config();
 
+const SessionStore = ConnectSessionSequelize(session.Store);
+
+const sessionStore = new SessionStore({ db: db });
+
 const app = express();
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'default_session_secret',
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      maxAge: 1800000,
+      httpOnly: true,
+    },
+  })
+);
 
 const allowedOrigins =
   process.env.NODE_ENV === "development"
@@ -73,3 +92,5 @@ process.on("SIGTERM", () => {
     db.close();
   });
 });
+
+sessionStore.sync();

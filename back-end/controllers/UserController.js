@@ -37,10 +37,19 @@ export const logIn = async (req, res) => {
     const roles = user.Roles ? user.Roles.map((role) => role.name) : [];
     const id = user.id;
 
+    // For JWT
+    const token = TokenService.generateAccessToken(user.id, user.email);
+
+    // For Session
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      roles,
+    };
+
     res.json({
       message: "User logged in",
-      token: accessToken,
-      roles,
+      token,
       id,
       email: user.email,
     });
@@ -48,6 +57,16 @@ export const logIn = async (req, res) => {
     logger.error("Error logging in user: " + err.toString());
     res.status(500).json({ message: "Server error", error: err.toString() });
   }
+};
+
+export const logOut = (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send("Could not log out");
+    }
+    res.clearCookie('connect.sid');
+    res.send("Logged out");
+  });
 };
 
 export const verify = async (req, res) => {
@@ -107,5 +126,14 @@ export const verifyEmail = async (req, res, next) => {
     res.sendStatus(200);
   } catch (error) {
     next(error);
+  }
+};
+
+export const checkSession = async (req, res) => {
+  // Check if the user session exists
+  if (req.session && req.session.userId) {
+    res.status(200).send({ isLoggedIn: true });
+  } else {
+    res.status(401).send({ isLoggedIn: false });
   }
 };

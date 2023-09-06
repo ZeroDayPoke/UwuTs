@@ -1,5 +1,3 @@
-// ./src/api/userApi.ts
-
 import axios, { AxiosResponse } from "axios";
 import { handleApiResponse, handleApiError, createApi } from "./apiConfig";
 
@@ -11,6 +9,8 @@ interface UserResponse {
   id?: string;
 }
 
+axios.defaults.withCredentials = true;
+
 const userApi = {
   ...createApi("users"),
 
@@ -18,7 +18,6 @@ const userApi = {
     axios
       .post("/users/signup", userData)
       .then((response: AxiosResponse) => {
-        localStorage.setItem("accessToken", response.data.token);
         const userWithRoles: UserResponse = {
           roles: response.data.roles,
           userId: response.data.userId,
@@ -32,7 +31,6 @@ const userApi = {
     axios
       .post("/users/login", userData)
       .then((response: AxiosResponse) => {
-        localStorage.setItem("accessToken", response.data.token);
         const userWithRolesAndFavorites: UserResponse = {
           roles: response.data.roles,
           userId: response.data.id,
@@ -45,9 +43,12 @@ const userApi = {
       })
       .catch(handleApiError),
 
-  logout: (): Promise<{ status: string; message: string }> => {
+  logout: (): Promise<any> => {
     localStorage.removeItem("accessToken");
-    return Promise.resolve({ status: "OK", message: "User logged out" });
+    return axios
+      .post("/users/logout")
+      .then(handleApiResponse)
+      .catch(handleApiError);
   },
 
   getAccount: (): Promise<any> =>

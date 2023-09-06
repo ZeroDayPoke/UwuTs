@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const API_URL = "http://localhost:3100"; // Update with your backend API URL
+const API_URL = "http://localhost:3100";
 
 // Set the default base URL for Axios requests
 axios.defaults.baseURL = API_URL;

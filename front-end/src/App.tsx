@@ -1,9 +1,7 @@
-// frontend/src/App.tsx
-
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { NavBar, Footer, SidePane } from "./components";
-import { Home, About, Contact, SignUp, LogIn, Account, Admin } from "./pages";
+import { Home, About, Contact, SignUp, LogIn, Account, Admin, TestimonialsPage } from "./pages";
 import "./App.css";
 
 function App() {
@@ -11,7 +9,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const logo = "./src/assets/logo.png";
-  const primaryItems = ["Home", "About", "Contact", "Help"];
+  const primaryItems = ["Home", "About", "Contact", "Help", "Testimonials"];
   const guestItems = ["Login", "SignUp"];
   const userItems = ["Logout", "Account", "Admin"];
   const leftFooterItems = ["Terms", "Privacy"];
@@ -20,8 +18,23 @@ function App() {
     isLoggedIn ? userItems : guestItems
   );
 
-  const onItemSelect = (item: string, index: number) => {
-    console.log(item, index);
+  // Check session on initial load
+  useEffect(() => {
+    fetch("http://localhost:3100/users/checkSession", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then(response => {
+        if (response.ok) {
+          setIsLoggedIn(true);
+        } else {
+          setIsLoggedIn(false);
+        }
+      })
+      .catch(error => console.error('There was a problem checking session: ', error));
+  }, []);
+
+  const onItemSelect = (item: string) => {
     setSelectedItem(item);
 
     if (item === "Logout") {
@@ -29,17 +42,17 @@ function App() {
         method: "POST",
         credentials: "include",
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => setIsLoggedIn(data.isLoggedIn))
-      .catch(error => console.error('There was a problem with your fetch operation: ', error));
-    } else {
-      console.log("Not logout");
+        .then(response => {
+          if (response.ok) {
+            setIsLoggedIn(false);
+          }
+        })
+        .catch(error => console.error('There was a problem with the logout operation: ', error));
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
   };
 
   return (
@@ -63,11 +76,9 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path='/testimonials' element={<TestimonialsPage />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route
-                path="/login"
-                element={<LogIn/>}
-              />
+              <Route path="/login" element={<LogIn onLogin={handleLoginSuccess} />} />
               <Route path="/account" element={<Account />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>

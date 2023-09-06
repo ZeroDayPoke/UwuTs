@@ -1,5 +1,3 @@
-// ./src/pages/LogIn.tsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import userApi from "../api/userApi";
@@ -24,9 +22,11 @@ function LogIn({ onLogin }: LogInProps) {
     };
 
     try {
-      await userApi.login(loginInfo, "http://localhost:3100/users/login");
+      await userApi.login(loginInfo);
 
+      // Notify parent component (App)
       onLogin();
+
       navigate("/account");
     } catch (error) {
       console.error(error);
