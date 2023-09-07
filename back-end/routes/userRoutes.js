@@ -15,5 +15,6 @@ router.post("/request-reset-password", userController.requestResetPassword);
 router.post("/reset-password/:token", userController.resetPassword);
 router.post("/request-verification-email", userController.requestVerificationEmail);
 router.post("/verify-email/:token", userController.verifyEmail);
+router.get("/account", userController.getAccountDetails);
 
 export default router;

@@ -9,14 +9,8 @@ const Account = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await userApi.getAccount();
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user information.");
-        }
-
-        const user: User = await response.json();
-        setUser(user);
+        const userData: User = await userApi.getAccount();
+        setUser(userData);
       } catch (error) {
         console.error(error);
         setError("An error occurred while fetching user information.");

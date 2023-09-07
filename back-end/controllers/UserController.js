@@ -64,7 +64,7 @@ export const logOut = (req, res) => {
     if (err) {
       return res.status(500).send("Could not log out");
     }
-    res.clearCookie('connect.sid');
+    res.clearCookie("connect.sid");
     res.send("Logged out");
   });
 };
@@ -135,5 +135,35 @@ export const checkSession = async (req, res) => {
     res.status(200).send({ isLoggedIn: true });
   } else {
     res.status(401).send({ isLoggedIn: false });
+  }
+};
+
+export const getAccountDetails = async (req, res) => {
+  try {
+    const userId = req.session?.userId || req.user?.id;
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ message: "User ID not found in session or user object" });
+    }
+
+    const user = await UserService.getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userDetails = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles: user.Roles ? user.Roles.map((role) => role.name) : [],
+    };
+
+    res.json(userDetails);
+  } catch (err) {
+    logger.error("Error fetching account details: " + err.toString());
+    res.status(500).json({ message: "Server error" });
   }
 };
