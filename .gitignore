@@ -1,8 +1,6 @@
-.env
-**node_modules/**
-*.gitignore
-*config.json
-seeders/
-*.sql
-*.log
-**package-lock.json**
+**.env
+**node_modules**
+**config.json
+**.sql
+**.log
+**package-lock.json
