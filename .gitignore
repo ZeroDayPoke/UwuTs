@@ -5,3 +5,4 @@
 seeders/
 *.sql
 *.log
+**package-lock.json**
