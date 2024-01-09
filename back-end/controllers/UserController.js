@@ -8,6 +8,7 @@ import {
   validateUser,
   validateUpdateUser,
 } from "../validation/userValidation.js";
+import { ServerError, AuthenticationError } from "../errors/index.js";
 
 const UserController = {
   signUp: asyncErrorHandler(async (req, res) => {
