@@ -1,19 +1,12 @@
-// ./models/index.js
+// models/index.js
 
-import db from '../config/database.js';
-import User from './User.js';
-import { Role, UserRole } from './Role.js';
-import Home from './Home.js';
+import db from "../config/database.js";
+import { setupAssociations } from "./associations.js";
+setupAssociations();
 
-db.User = User;
-db.Home = Home;
-db.Role = Role;
-db.UserRole = UserRole;
+import User from "./User.js";
+import Role from "./Role.js";
+import Token from "./Token.js";
+import { UserRole } from "./associations.js";
 
-Object.values(db).forEach(model => {
-  if ('associate' in model) {
-    model.associate(db);
-  }
-});
-
-export { db, User, Home, Role, UserRole };
+export { db, Role, User, UserRole, Token };

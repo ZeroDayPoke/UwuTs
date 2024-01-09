@@ -1,12 +1,28 @@
-import Sequelize from 'sequelize';
-import dotenv from 'dotenv';
+// config/database.js
 
-dotenv.config();
+import Sequelize from "sequelize";
+import config from "./config.js";
+import ENV from "../utils/loadEnv.js";
 
-const db = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-  host: process.env.DB_HOST,
-  dialect: 'mysql',
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
-});
+const env = ENV.NODE_ENV;
+const dbConfig = config[env];
+
+const db = new Sequelize(
+  dbConfig.database,
+  dbConfig.username,
+  dbConfig.password,
+  {
+    host: dbConfig.host,
+    dialect: dbConfig.dialect,
+    logging: dbConfig.logging,
+    pool: {
+      max: 10,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
+    dialectOptions: env === "production" ? { ssl: { require: true, rejectUnauthorized: false } } : {},
+  }
+);
 
 export default db;

@@ -1,66 +1,100 @@
-// ./services/TokenService.js
-
+// services/TokenService.js
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import crypto from "crypto";
+import ENV from "../utils/loadEnv.js";
+import logger from "../middleware/logger.js";
+import Token from "../models/Token.js";
+import { ServerError, ValidationError } from "../errors/index.js";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = ENV.JWT_SECRET;
+const ACCESS_TOKEN_EXPIRY = ENV.ACCESS_TOKEN_EXPIRY || "1h";
+const EMAIL_VERIFICATION_TOKEN_EXPIRY =
+  ENV.EMAIL_VERIFICATION_TOKEN_EXPIRY || "24h"; // Set in ENV
+const PASSWORD_RESET_TOKEN_EXPIRY = ENV.PASSWORD_RESET_TOKEN_EXPIRY || "1h"; // Set in ENV
 
 export default class TokenService {
-  static generateAccessToken(userId, email) {
-    const today = new Date();
-    const expirationDate = new Date(today);
-    expirationDate.setDate(today.getDate() + 60);
-
-    return jwt.sign(
-      {
-        email: email,
-        id: userId,
-        exp: parseInt(expirationDate.getTime() / 1000, 10),
-      },
-      JWT_SECRET
-    );
+  // Helper function to sign a JWT
+  static _signJwt(payload, expiresIn) {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn });
   }
 
-  static generateVerificationToken() {
-    return crypto.randomBytes(20).toString("hex");
+  // Helper function to verify a JWT
+  static _verifyJwt(token) {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {
+          logger.error(`JWT verification error: ${err.message}`);
+          return reject(err);
+        }
+        resolve(decoded);
+      });
+    });
   }
 
-  static generateResetToken(userId) {
-    const today = new Date();
-    const expirationDate = new Date(today);
-    expirationDate.setHours(today.getHours() + 1); // Token expires in 1 hour
-
-    return jwt.sign(
-      {
-        id: userId,
-        exp: parseInt(expirationDate.getTime() / 1000, 10),
-      },
-      JWT_SECRET
-    );
-  }
-
-  static verifyResetToken(token) {
+  // Refresh Token (now private)
+  static async _refreshToken(token) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      return decoded.id;
+      const payload = await this._verifyJwt(token);
+      return this.generateAccessToken(payload.id, payload.roles);
     } catch (e) {
-      return null;
+      throw new ServerError("Failed to refresh token");
     }
   }
 
-  static validateAccessToken(token) {
-    try {
-      return jwt.verify(token, JWT_SECRET);
-    } catch (e) {
-      return null;
+  // Validate Token (for Email Verification and Password Reset) (now private)
+  static async _validateToken(token, type) {
+    const foundToken = await Token.findOne({
+      where: { token, type, expiration: { $gt: new Date() } },
+    });
+    if (!foundToken) {
+      throw new ValidationError("Invalid or expired token");
     }
+    return foundToken.userId;
   }
 
-  static refreshToken(token) {
-    const decodedToken = jwt.verify(token, JWT_SECRET);
-    const { id, email } = decodedToken;
+  // Public method to interface with private _validateToken
+  static async validateEmailVerificationToken(token) {
+    return this._validateToken(token, "email-verification");
+  }
 
-    return this.generateAccessToken(id, email);
+  static async validatePasswordResetToken(token) {
+    return this._validateToken(token, "password-reset");
+  }
+
+  // Generate Access Token and store in database
+  static async generateAccessToken(userId, roles = []) {
+    const payload = { id: userId, roles };
+    const token = this._signJwt(payload, ACCESS_TOKEN_EXPIRY);
+    await Token.create({
+      userId,
+      token,
+      type: "access",
+      expiration: new Date(Date.now() + ms(ACCESS_TOKEN_EXPIRY)),
+    });
+    return token;
+  }
+
+  // Generate Email Verification Token
+  static async generateEmailVerificationToken(userId) {
+    const token = crypto.randomBytes(20).toString("hex");
+    await Token.create({
+      userId,
+      token,
+      type: "email-verification",
+      expiration: new Date(Date.now() + ms(EMAIL_VERIFICATION_TOKEN_EXPIRY)),
+    });
+    return token;
+  }
+
+  // Generate Password Reset Token
+  static async generatePasswordResetToken(userId) {
+    const token = crypto.randomBytes(20).toString("hex");
+    await Token.create({
+      userId,
+      token,
+      type: "password-reset",
+      expiration: new Date(Date.now() + ms(PASSWORD_RESET_TOKEN_EXPIRY)),
+    });
+    return token;
   }
 }

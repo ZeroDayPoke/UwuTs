@@ -1,51 +1,29 @@
-// ./models/User.js
+// models/User.js
 
 import { DataTypes } from "sequelize";
 import bcrypt from "bcrypt";
 import db from "../config/database.js";
-import crypto from "crypto";
+import ENV from "../utils/loadEnv.js";
 
-const SALT_ROUNDS = parseInt(process.env.SALT_ROUNDS) || 10;
+const SALT_ROUNDS = ENV.SALT_ROUNDS;
 
 const User = db.define(
   "User",
   {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    name: { type: DataTypes.STRING, allowNull: false },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        isEmail: true,
-      },
+      validate: { isEmail: true },
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      set(value) {
-        const hash = bcrypt.hashSync(value, SALT_ROUNDS);
-        this.setDataValue("password", hash);
-      },
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    password: { type: DataTypes.STRING, allowNull: false },
+    lastLogin: { type: DataTypes.DATE, allowNull: true },
+    phone: { type: DataTypes.STRING, allowNull: false },
     isVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-    },
-    verificationToken: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    verificationTokenExpiration: {
-      type: DataTypes.DATE,
-      allowNull: true,
     },
   },
   {
@@ -53,17 +31,12 @@ const User = db.define(
   }
 );
 
-User.associate = (models) => {
-  User.belongsToMany(models.Role, { through: models.UserRole });
-};
+User.beforeCreate(async (user) => {
+  user.password = await bcrypt.hash(user.password, SALT_ROUNDS);
+});
 
-User.prototype.validatePassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
-};
-
-User.prototype.generateVerificationToken = function () {
-  this.verificationToken = crypto.randomBytes(32).toString("hex");
-  this.verificationTokenExpiration = Date.now() + 3600000;
+User.prototype.validatePassword = async function (password) {
+  return bcrypt.compare(password, this.password);
 };
 
 export default User;

@@ -1,169 +1,150 @@
 // ./controllers/UserController.js
 
-import { User } from "../models/index.js";
-import TokenService from "../services/TokenService.js";
 import UserService from "../services/UserService.js";
-import { logger } from "../middleware/RequestLogger.js";
+import TokenService from "../services/TokenService.js";
+import asyncErrorHandler from "../middleware/asyncErrorHandler.js";
+import logger from "../middleware/logger.js";
+import {
+  validateUser,
+  validateUpdateUser,
+} from "../validation/userValidation.js";
 
-export const signUp = async (req, res) => {
-  try {
-    logger.info("Creating user...");
-    const user = await UserService.createUser(req.body);
-    const roles = user.Roles ? user.Roles.map((role) => role.name) : [];
-    const accessToken = TokenService.generateAccessToken(user.id, user.email);
+const UserController = {
+  signUp: asyncErrorHandler(async (req, res) => {
+    const { error } = validateUser(req.body);
+    if (error) {
+      throw new ValidationError(error.details[0].message);
+    }
 
-    res.json({
-      message: "User created",
-      token: accessToken,
-      roles,
-      userId: user.id,
-      email: user.email,
-    });
-  } catch (err) {
-    logger.error("Error creating user: " + err.toString());
-    res.status(500).send("Server error");
-  }
-};
+    try {
+      const user = await UserService.createUser(req.body);
+      const accessToken = await TokenService.generateAccessToken(
+        user.id,
+        user.roles
+      );
 
-export const logIn = async (req, res) => {
-  try {
+      storeEssentialUserDataInSession(req, { id: user.id, roles: user.roles });
+      res.status(201).json({
+        message: "User created",
+        userId: user.id,
+        email: user.email,
+        token: accessToken,
+        success: true,
+      });
+    } catch (err) {
+      throw new ServerError("Error creating user");
+    }
+  }),
+
+  logIn: asyncErrorHandler(async (req, res) => {
     const { email, password } = req.body;
     logger.info(`Attempting to log in user with email: ${email}`);
-    const { user, accessToken } = await UserService.authenticate({
-      email,
-      password,
+
+    try {
+      const { user, accessToken } = await UserService.authenticate({
+        email,
+        password,
+      });
+      storeEssentialUserDataInSession(req, { id: user.id, roles: user.roles });
+
+      res.status(200).json({
+        token: accessToken,
+      });
+    } catch (err) {
+      throw new ServerError("Error logging in user");
+    }
+  }),
+
+  logOut: asyncErrorHandler(async (req, res) => {
+    logger.info(`Logging out user ${req.session.userId}`);
+    req.session.destroy((err) => {
+      if (err) {
+        logger.error(`Error logging out user: ${err}`);
+        return res
+          .status(500)
+          .json({ message: "Could not log out. Try again." });
+      }
+      res.clearCookie("sessionId");
+      res.status(200).json(true);
     });
-    logger.info(`User roles: ${JSON.stringify(user.Roles)}`);
-    const roles = user.Roles ? user.Roles.map((role) => role.name) : [];
-    const id = user.id;
+  }),
 
-    // For JWT
-    const token = TokenService.generateAccessToken(user.id, user.email);
-
-    // For Session
-    req.session.user = {
-      id: user.id,
-      email: user.email,
-      roles,
-    };
-
-    res.json({
-      message: "User logged in",
-      token,
-      id,
-      email: user.email,
-    });
-  } catch (err) {
-    logger.error("Error logging in user: " + err.toString());
-    res.status(500).json({ message: "Server error", error: err.toString() });
-  }
-};
-
-export const logOut = (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send("Could not log out");
+  verify: asyncErrorHandler(async (req, res) => {
+    try {
+      const user = await UserService.verifyEmailToken(req.query.token);
+      res.status(200).json({ message: "User verified" });
+    } catch (err) {
+      throw new ServerError("Failed to verify email");
     }
-    res.clearCookie("connect.sid");
-    res.send("Logged out");
-  });
-};
+  }),
 
-export const verify = async (req, res) => {
-  try {
-    const user = await UserService.verifyEmailToken(req.query.token);
+  getAllUsers: asyncErrorHandler(async (req, res) => {
+    try {
+      const users = await UserService.getAllUsers();
+      logger.info(`Found ${users.length} users`);
+      res.status(200).json(users);
+    } catch (err) {
+      throw new ServerError("Failed to get all users");
+    }
+  }),
 
-    res.json({ message: "User verified" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
+  requestResetPassword: asyncErrorHandler(async (req, res, next) => {
+    try {
+      await UserService.requestPasswordReset(req.body.email);
+      res.status(200).json({ message: "Password reset email sent" });
+    } catch (error) {
+      next(error);
+    }
+  }),
 
-export const getAllUsers = async (req, res) => {
-  try {
-    const users = await UserService.getAllUsers();
+  resetPassword: asyncErrorHandler(async (req, res) => {
+    try {
+      await UserService.resetPassword(req.params.token, req.body.password);
+      res.status(200).json({ message: "Password reset" });
+    } catch (error) {
+      next(error);
+    }
+  }),
 
-    res.json(users);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error", error: err.toString() });
-  }
-};
+  requestVerificationEmail: asyncErrorHandler(async (req, res, next) => {
+    try {
+      await UserService.requestEmailVerification(req.body.email);
+      res.status(200).json({ message: "Verification email sent" });
+    } catch (error) {
+      next(error);
+    }
+  }),
 
-export const requestResetPassword = async (req, res, next) => {
-  try {
-    console.log(req.body.email);
-    await UserService.requestPasswordReset(req.body.email);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
-  }
-};
+  verifyEmail: asyncErrorHandler(async (req, res, next) => {
+    try {
+      await UserService.verifyEmail(req.params.token);
+      res.status(200).json({ message: "Email verified" });
+    } catch (error) {
+      next(error);
+    }
+  }),
 
-export const resetPassword = async (req, res, next) => {
-  try {
-    console.log(req.params.token, req.body.password);
-    await UserService.resetPassword(req.params.token, req.body.password);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const requestVerificationEmail = async (req, res, next) => {
-  try {
-    await UserService.requestEmailVerification(req.body.email);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const verifyEmail = async (req, res, next) => {
-  try {
-    await UserService.verifyEmail(req.params.token);
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const checkSession = async (req, res) => {
-  // Check if the user session exists
-  if (req.session && req.session.userId) {
-    res.status(200).send({ isLoggedIn: true });
-  } else {
-    res.status(401).send({ isLoggedIn: false });
-  }
-};
-
-export const getAccountDetails = async (req, res) => {
-  try {
-    const userId = req.session?.userId || req.user?.id;
-
-    if (!userId) {
-      return res
-        .status(400)
-        .json({ message: "User ID not found in session or user object" });
+  checkSession: asyncErrorHandler(async (req, res) => {
+    if (!req.session.userId) {
+      throw new AuthenticationError("Session invalid or expired");
     }
 
-    const user = await UserService.getUserById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    try {
+      const userAccount = await UserService.getUserById(req.session.userId);
+      res.status(200).json({
+        valid: true,
+        message: "User logged in",
+        userAccount: {
+          id: userAccount.id,
+          email: userAccount.email,
+          roles: userAccount.Roles.map((role) => role.name),
+        },
+        success: true,
+      });
+    } catch (err) {
+      throw new ServerError("Failed to check session");
     }
-
-    const userDetails = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      roles: user.Roles ? user.Roles.map((role) => role.name) : [],
-    };
-
-    res.json(userDetails);
-  } catch (err) {
-    logger.error("Error fetching account details: " + err.toString());
-    res.status(500).json({ message: "Server error" });
-  }
+  }),
 };
+
+export default UserController;

@@ -7,8 +7,15 @@ import {
   AuthenticationError,
   ServerError,
 } from "../errors/index.js";
-import { logger } from "./RequestLogger.js";
+import logger from "./logger.js";
 
+/**
+ * Middleware function to handle errors in the application.
+ * @param {Error} err - The error object to be handled.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 const errorHandler = (err, req, res, next) => {
   if (err instanceof ValidationError) {
     logger.error(`ValidationError: ${err.message}`);

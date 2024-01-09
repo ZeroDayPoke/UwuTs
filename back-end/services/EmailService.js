@@ -1,47 +1,47 @@
 // ./services/EmailService.js
 
 import nodemailer from "nodemailer";
+import ENV from "../utils/loadEnv.js";
+import logger from "../middleware/logger.js";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASSWORD,
+    user: ENV.EMAIL_USERNAME,
+    pass: ENV.EMAIL_PASSWORD,
   },
 });
 
 export default class EmailService {
-  static sendVerificationEmail(userEmail, token) {
-    const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
-      to: userEmail,
-      subject: "Email Verification",
-      text: `Please verify your email by clicking the following link: http://localhost:3100/users/verify?token=${token}`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(`Email sent: ${info.response}`);
-      }
-    });
+  static async sendEmail(mailOptions) {
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      logger.info(`Email sent: ${info.response}`);
+    } catch (error) {
+      logger.error(`Error sending email: ${error}`);
+      throw error; // Rethrow the error for the caller to handle
+    }
   }
 
-  static sendResetPasswordEmail(userEmail, token) {
+  static async sendVerificationEmail(userEmail, token) {
     const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
+      from: ENV.EMAIL_USERNAME,
       to: userEmail,
-      subject: "Password Reset Request",
-      text: `You have requested to reset your password. Please click the following link to reset your password: ${process.env.BASE_URL}/reset-password?token=${token}`,
+      subject: "Email Verification",
+      text: `Please verify your email by clicking the following link: https://zerodaypoke.com/verify_account_email/${token}`,
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log(`Email sent: ${info.response}`);
-      }
-    });
+    await this.sendEmail(mailOptions);
+  }
+
+  static async sendResetPasswordEmail(userEmail, token) {
+    const mailOptions = {
+      from: ENV.EMAIL_USERNAME,
+      to: userEmail,
+      subject: "Password Reset Request",
+      text: `You have requested to reset your password. Please click the following link to reset your password: ${ENV.BASE_URL}/reset-password?token=${token}`,
+    };
+
+    await this.sendEmail(mailOptions);
   }
 }

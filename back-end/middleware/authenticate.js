@@ -1,22 +1,26 @@
 // middleware/authenticate.js
 
-import jwt from "jsonwebtoken";
+import logger from "./logger.js";
+import asyncErrorHandler from "./asyncErrorHandler.js";
+import { AuthenticationError } from "../errors/index.js"; //
 
-const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.sendStatus(401);
+/**
+ * Middleware function to ensure that the user is authenticated.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @throws {AuthenticationError} If the user is not authenticated.
+ */
+const ensureAuthenticated = asyncErrorHandler(async (req, res, next) => {
+  if (req.session.userId && req.user.id == req.session.userId) {
+    logger.info(`Authenticated successfully: ${req.session.userId}`);
+    return next();
   }
 
-  const token = authHeader.split(" ")[1];
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    req.userId = user.id;
-    req.user = user;
-    next();
-  });
-};
+  const errorMsg = `Failed to authenticate: session userId: ${req.session.userId}, token userId: ${req.user.id}`;
+  logger.error(errorMsg);
 
-export { authenticateJWT };
+  throw new AuthenticationError("Not authenticated");
+});
+
+export default ensureAuthenticated;
