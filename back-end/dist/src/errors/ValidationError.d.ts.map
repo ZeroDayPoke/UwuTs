@@ -1,0 +1,1 @@
+{"version":3,"file":"ValidationError.d.ts","sourceRoot":"","sources":["../../../src/errors/ValidationError.ts"],"names":[],"mappings":"AAEA;;GAEG;AACH,cAAM,eAAgB,SAAQ,KAAK;IAC1B,UAAU,EAAE,MAAM,CAAC;IAE1B;;;OAGG;gBACS,OAAO,EAAE,MAAM;CAK5B;AAED,eAAe,eAAe,CAAC"}
