@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { User } from "../types";
-import userApi from "../api/userApi";
+import { useEffect, useState } from 'react';
+import { User } from '@zerodaypoke/shared-types';
+import userApi from '../api/userApi';
 
 const Account = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -13,7 +13,7 @@ const Account = () => {
         setUser(userData);
       } catch (error) {
         console.error(error);
-        setError("An error occurred while fetching user information.");
+        setError('An error occurred while fetching user information.');
       }
     };
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import TestimonialCarousel from '../components/TestimonialCarousel';
-import { Testimonial } from '../types';
+import { Testimonial } from '../../../types';
 
 const TestimonialsPage: React.FC = () => {
     const sampleTestimonials: Testimonial[] = [

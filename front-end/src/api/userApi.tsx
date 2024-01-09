@@ -1,6 +1,6 @@
 // ./src/api/userApi.tsx
 import apiClient from './apiConfig';
-import { UserCredentials, UserResponse } from '../types/userTypes';
+import { UserCredentials, UserResponse } from '@types';
 
 const BASE_ENDPOINT = '/users';
 

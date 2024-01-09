@@ -11,7 +11,7 @@ import {
   StyledNavBrand,
   StyledNavLink,
 } from './NavBarStyles';
-import { NavBarProps } from '../../types/defaultTypes';
+import { NavBarProps } from '@zerodaypoke/shared-types';
 
 const NavBar: React.FC<NavBarProps> = ({ items }) => {
   return (

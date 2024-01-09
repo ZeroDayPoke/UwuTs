@@ -1,27 +1,29 @@
 // ./src/pages/Admin.tsx
 
-import { useEffect, useState } from "react";
-import { Card, Carousel } from "react-bootstrap";
-import { Home } from "../types";
+import { useEffect, useState } from 'react';
+import { Card, Carousel } from 'react-bootstrap';
+import { Home } from '@zerodaypoke/shared-types';
 
 function Admin() {
   const [homes, setHomes] = useState<Home[]>([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchHomes = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/homes/read`);
+        const response = await fetch(
+          `${process.env.REACT_APP_API_URL}/homes/read`,
+        );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch homes.");
+          throw new Error('Failed to fetch homes.');
         }
 
         const data: Home[] = await response.json();
         setHomes(data);
       } catch (error) {
         console.error(error);
-        setError("An error occurred while fetching homes.");
+        setError('An error occurred while fetching homes.');
       }
     };
 
