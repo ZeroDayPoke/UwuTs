@@ -13,7 +13,7 @@ export const loginUser = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
-  }
+  },
 );
 
 // Async thunk for user logout
@@ -27,7 +27,7 @@ export const logoutUser = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
-  }
+  },
 );
 
 // Async thunk for session check
@@ -40,7 +40,7 @@ export const checkSession = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
-  }
+  },
 );
 
 const userSlice = createSlice({
