@@ -1,10 +1,20 @@
+// main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Provider as ReduxProvider } from 'react-redux';
+import store from './store/store.js';
+import './styles/index.scss';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <ReduxProvider store={store}>
+        <App />
+      </ReduxProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

@@ -1,53 +1,68 @@
-import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { NavBar, Footer, SidePane } from "./components";
-import { Home, About, Contact, SignUp, LogIn, Account, Admin, TestimonialsPage } from "./pages";
-import "./App.css";
+import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { NavBar, Footer, SidePane } from './components';
+import {
+  Home,
+  About,
+  Contact,
+  SignUp,
+  LogIn,
+  Account,
+  Admin,
+  TestimonialsPage,
+} from './pages';
 
 function App() {
-  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedItem, setSelectedItem] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const logo = "./src/assets/logo.png";
-  const primaryItems = ["Home", "About", "Contact", "Help", "Testimonials"];
-  const guestItems = ["Login", "SignUp"];
-  const userItems = ["Logout", "Account", "Admin"];
-  const leftFooterItems = ["Terms", "Privacy"];
-  const rightFooterItems = ["Facebook", "Twitter", "Instagram"];
+  const logo = './src/assets/logo.png';
+  const primaryItems = ['Home', 'About', 'Contact', 'Help', 'Testimonials'];
+  const guestItems = ['Login', 'SignUp'];
+  const userItems = ['Logout', 'Account', 'Admin'];
+  const leftFooterItems = ['Terms', 'Privacy'];
+  const rightFooterItems = ['Facebook', 'Twitter', 'Instagram'];
   const sidePaneItems = primaryItems.concat(
-    isLoggedIn ? userItems : guestItems
+    isLoggedIn ? userItems : guestItems,
   );
 
   // Check session on initial load
   useEffect(() => {
-    fetch("http://localhost:3100/users/checkSession", {
-      method: "GET",
-      credentials: "include",
+    fetch('http://localhost:3100/users/checkSession', {
+      method: 'GET',
+      credentials: 'include',
     })
-      .then(response => {
+      .then((response) => {
         if (response.ok) {
           setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
         }
       })
-      .catch(error => console.error('There was a problem checking session: ', error));
+      .catch((error) =>
+        console.error('There was a problem checking session: ', error),
+      );
   }, []);
 
   const onItemSelect = (item: string) => {
     setSelectedItem(item);
 
-    if (item === "Logout") {
-      fetch("http://localhost:3100/users/logout", {
-        method: "POST",
-        credentials: "include",
+    if (item === 'Logout') {
+      fetch('http://localhost:3100/users/logout', {
+        method: 'POST',
+        credentials: 'include',
       })
-        .then(response => {
+        .then((response) => {
           if (response.ok) {
             setIsLoggedIn(false);
           }
         })
-        .catch(error => console.error('There was a problem with the logout operation: ', error));
+        .catch((error) =>
+          console.error(
+            'There was a problem with the logout operation: ',
+            error,
+          ),
+        );
     }
   };
 
@@ -76,9 +91,12 @@ function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path='/testimonials' element={<TestimonialsPage />} />
+              <Route path="/testimonials" element={<TestimonialsPage />} />
               <Route path="/signup" element={<SignUp />} />
-              <Route path="/login" element={<LogIn onLogin={handleLoginSuccess} />} />
+              <Route
+                path="/login"
+                element={<LogIn onLogin={handleLoginSuccess} />}
+              />
               <Route path="/account" element={<Account />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
