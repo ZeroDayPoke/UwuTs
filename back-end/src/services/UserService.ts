@@ -14,10 +14,10 @@ import {
 } from "../errors";
 
 interface CreateUserParams {
-  name: string;
+  name?: string;
   email: string;
   password: string;
-  phone: string;
+  phone?: string;
 }
 
 interface AuthenticateParams {
@@ -30,12 +30,14 @@ class UserService {
     logger.info(`Creating user with email: ${params.email}`);
     const hashedPassword = await bcrypt.hash(params.password, 10);
     const user = await UserRepository.createUser({
-      ...params,
+      name: params.name,
+      email: params.email,
       password: hashedPassword,
+      phone: params.phone,
     });
 
     const verificationToken = TokenService.generateEmailVerificationToken(
-      user.id
+      user.getDataValue("id")
     );
 
     logger.info(`User created with email: ${params.email}`);
@@ -62,8 +64,13 @@ class UserService {
       throw new ValidationError("No user found with that email address.");
     }
 
-    const resetToken = await TokenService.generatePasswordResetToken(user.id);
-    await EmailService.sendResetPasswordEmail(user.email, resetToken);
+    const resetToken = await TokenService.generatePasswordResetToken(
+      user.getDataValue("id")
+    );
+    await EmailService.sendResetPasswordEmail(
+      user.getDataValue("email"),
+      resetToken
+    );
   }
 
   async resetPassword(token: string, newPassword: string): Promise<void> {
@@ -74,8 +81,8 @@ class UserService {
       throw new ValidationError("Invalid or expired reset token.");
     }
 
-    user.password = await bcrypt.hash(newPassword, 10);
-    await user.save();
+    user.setDataValue("password", await bcrypt.hash(newPassword, 10));
+    await UserRepository.updateUserById(user.getDataValue("id"), user);
   }
 
   async requestEmailVerification(email: string): Promise<void> {
@@ -86,9 +93,12 @@ class UserService {
     }
 
     const verificationToken = await TokenService.generateEmailVerificationToken(
-      user.id
+      user.getDataValue("id")
     );
-    await EmailService.sendVerificationEmail(user.email, verificationToken);
+    await EmailService.sendVerificationEmail(
+      user.getDataValue("email"),
+      verificationToken
+    );
   }
 
   async verifyEmail(token: string): Promise<User> {
@@ -102,9 +112,9 @@ class UserService {
       throw new NotFoundError("User not found");
     }
 
-    user.isVerified = true;
+    // user.isVerified = true;
     await user.save();
-    logger.info(`Email verified for user with ID: ${user.id}`);
+    logger.info(`Email verified for user with ID: ${user.getDataValue("id")}`);
     return user;
   }
 
@@ -117,10 +127,10 @@ class UserService {
       throw new ValidationError("Invalid or expired token");
     }
 
-    user.isVerified = true;
-    await UserRepository.updateUserById(user.id, user);
+    // user.isVerified = true;
+    await UserRepository.updateUserById(user.getDataValue("id"), user);
 
-    logger.info(`Email verified for user with ID: ${user.id}`);
+    logger.info(`Email verified for user with ID: ${user.getDataValue("id")}`);
     return user;
   }
 
@@ -128,18 +138,20 @@ class UserService {
     params: AuthenticateParams
   ): Promise<{ user: User; accessToken: string }> {
     logger.info(`Authenticating user with email: ${params.email}`);
-    const user = await this._findUserByEmailWithRoles(params.email);
+    const user: User = await this._findUserByEmailWithRoles(params.email);
     if (!user) {
       throw new NotFoundError("User not found");
     }
 
-    const isMatch = await bcrypt.compare(params.password, user.password);
+    const isMatch = user.validatePassword(params.password);
     if (!isMatch) {
       throw new AuthenticationError("Incorrect password");
     }
 
     const accessToken = await this._generateUserAccessToken(user);
-    logger.info(`Generated access token for user with ID: ${user.id}`);
+    logger.info(
+      `Generated access token for user with ID: ${user.getDataValue("id")}`
+    );
     return { user, accessToken };
   }
 
@@ -149,8 +161,10 @@ class UserService {
   }
 
   async _generateUserAccessToken(user: User): Promise<string> {
-    const roles = user.roles.map((role) => role.name);
-    return TokenService.generateAccessToken(user.id, roles);
+    const roles = ((user.get("Roles") as Role[]) ?? []).map(
+      (role: Role) => role.name
+    );
+    return TokenService.generateAccessToken(user.getDataValue("id"), roles);
   }
 }
 

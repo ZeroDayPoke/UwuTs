@@ -1,41 +1,32 @@
-// ./models/User.ts
-
-import { DataTypes, Model } from "sequelize";
+import { Model, DataTypes, Optional } from "sequelize";
 import bcrypt from "bcrypt";
 import Role from "./Role";
 import db from "../config/database";
-import ENV from "../utils/loadEnv";
 
-interface UserAttributes {
-  id?: number;
+export interface UserAttributes {
+  id: number;
   name: string;
   email: string;
   password: string;
-  lastLogin?: Date;
   phone: string;
+  lastLogin: Date;
   isVerified: boolean;
 }
 
-class User extends Model<UserAttributes> implements UserAttributes {
-  public id!: number;
-  public name!: string;
-  public email!: string;
-  public password!: string;
-  public lastLogin!: Date;
-  public phone!: string;
-  public isVerified!: boolean;
-
-  public async validatePassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password);
+class User extends Model<UserAttributes> {
+  public async validatePassword(passToCheck: string): Promise<boolean> {
+    const password = this.getDataValue("password");
+    return bcrypt.compare(passToCheck, password);
   }
 
-  public get roles(): Role[] {
-    return this.get("Roles") as Role[];
+  public get Roles(): Role[] {
+    return this.get("Roles");
   }
 }
 
 User.init(
   {
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     name: { type: DataTypes.STRING, allowNull: false },
     email: {
       type: DataTypes.STRING,
@@ -45,7 +36,7 @@ User.init(
     },
     password: { type: DataTypes.STRING, allowNull: false },
     lastLogin: { type: DataTypes.DATE, allowNull: true },
-    phone: { type: DataTypes.STRING, allowNull: false },
+    phone: { type: DataTypes.STRING, allowNull: true },
     isVerified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -57,9 +48,5 @@ User.init(
     tableName: "Users",
   }
 );
-
-User.beforeCreate(async (user: User) => {
-  user.password = await bcrypt.hash(user.password, ENV.SALT_ROUNDS);
-});
 
 export default User;

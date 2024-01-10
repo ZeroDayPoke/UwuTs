@@ -32,7 +32,7 @@ app.use(
 );
 
 // CORS configuration
-const allowedOrigins = ["tulsahomesales.com, localhost:5173"];
+const allowedOrigins = ["localhost:5173"];
 app.use(
   cors({
     origin: (origin, callback) => {

@@ -39,8 +39,8 @@ export default class TokenService {
     const payload = { userId, roles };
     const token = this._signJwt(payload, ACCESS_TOKEN_EXPIRY);
     await Token.create({
-      userId,
-      token,
+      userId: userId,
+      token: token,
       type: "access",
       expiration: new Date(Date.now() + ms(ACCESS_TOKEN_EXPIRY)),
     });

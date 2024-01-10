@@ -3,6 +3,7 @@
 import UserService from "../services/UserService";
 import TokenService from "../services/TokenService";
 import asyncErrorHandler from "../middleware/asyncErrorHandler";
+import { Role, User } from "../models";
 import logger from "../middleware/logger";
 import { storeEssentialUserDataInSession } from "../utils/sessionUtils";
 import { ServerError, ValidationError, AuthenticationError } from "../errors";
@@ -24,20 +25,24 @@ const UserController = {
       }
 
       try {
-        const user = await UserService.createUser(req.body);
+        const user: User = await UserService.createUser(req.body);
+        const roles = ((user.get("Roles") as Role[]) ?? []).map(
+          (role: Role) => role.name
+        );
+
         const accessToken = await TokenService.generateAccessToken(
-          user.id,
-          user.roles.map((role) => role.name)
+          user.getDataValue("id"),
+          roles
         );
 
         storeEssentialUserDataInSession(req, {
-          userId: user.id,
-          roles: user.roles.map((role) => role.name),
+          userId: user.getDataValue("id"),
+          roles: roles,
         });
 
         res.status(201).json({
           message: "User created",
-          userId: user.id,
+          userId: user.getDataValue("id"),
           token: accessToken,
         });
       } catch (err) {
@@ -58,15 +63,17 @@ const UserController = {
           email,
           password,
         });
+        logger.info(`Storing user data in session: ${req.session.id}`);
+
         storeEssentialUserDataInSession(req, {
-          userId: user.id,
-          roles: user.roles.map((role) => role.name),
+          userId: user.getDataValue("id"),
+          roles: ((user.get("Roles") as Role[]) ?? []).map((role) => role.name),
         });
 
         res.status(200).json({
           message: "Login successful",
           token: accessToken,
-          userId: user.id,
+          userId: user.getDataValue("id"),
         });
       } catch (err) {
         logger.error(`Error logging in user: ${err.message}`);

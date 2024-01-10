@@ -1,6 +1,6 @@
 // ./src/api/userApi.tsx
 import apiClient from './apiConfig';
-import { UserCredentials, UserResponse } from '@types';
+import { UserCredentials, UserResponse } from '@zerodaypoke/shared-types';
 
 const BASE_ENDPOINT = '/users';
 

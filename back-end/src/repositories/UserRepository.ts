@@ -1,15 +1,30 @@
 import { User, Role, Token } from "../models";
 import { Op } from "sequelize";
+import logger from "../middleware/logger";
+
+interface CreateParams {
+  name?: string;
+  email: string;
+  password: string;
+  phone?: string;
+  Roles?: Role[];
+}
 
 class UserRepository {
-  async createUser(userData: any): Promise<User> {
-    return User.create(userData);
+  async createUser(userData: CreateParams): Promise<User> {
+    try {
+      logger.info(`Creating user with params ${JSON.stringify(userData)}`);
+      return await User.create(userData, {
+        include: [Role],
+      });
+    } catch (err) {
+      logger.error(err.message);
+    }
   }
 
   async findById(id: number): Promise<User | null> {
     return User.findOne({
       where: { id },
-      include: [{ model: Role, as: "Roles" }],
     });
   }
 
@@ -28,10 +43,13 @@ class UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return User.findOne({
-      where: { email },
-      include: [{ model: Role, as: "Roles" }],
-    });
+    try {
+      return await User.findOne({
+        where: { email },
+      });
+    } catch (err) {
+      logger.error(err.message);
+    }
   }
 
   async findAll(): Promise<User[]> {

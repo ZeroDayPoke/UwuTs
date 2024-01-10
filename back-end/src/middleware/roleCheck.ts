@@ -3,6 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import UserService from "../services/UserService";
 import TokenService from "../services/TokenService";
+import { Role } from "../models";
 import logger from "./logger";
 import asyncErrorHandler from "./asyncErrorHandler";
 import { AuthorizationError } from "../errors/index";
@@ -25,11 +26,12 @@ const requireRole = (requiredRole: string) => {
       if (!decodedTokenUserId) {
         throw new AuthorizationError("Invalid token");
       }
-      const user = await UserService.getUserById(decodedTokenUserId);
 
-      const hasRequiredRole = user.roles
-        .map((role) => role.name)
-        .includes(requiredRole);
+      const user = await UserService.getUserById(decodedTokenUserId);
+      const hasRequiredRole =
+        (user.get("Roles") as Role[])
+          .map((role: Role) => role.name)
+          .includes(requiredRole) || false;
 
       if (!hasRequiredRole) {
         throw new AuthorizationError(
