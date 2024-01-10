@@ -4,31 +4,20 @@ import { DataTypes, Model } from "sequelize";
 import db from "../config/database";
 import User from "./User";
 
-interface HomeAttributes {
+export interface HomeAttributes {
   id?: number;
   street: string;
   city: string;
   state: string;
   zipcode: string;
-  squareFootage: number;
+  squareFootage?: number;
   yearBuilt?: number;
-  numberBathrooms: number;
-  numberBedrooms: number;
+  numberBathrooms?: number;
+  numberBedrooms?: number;
   userId?: number;
 }
 
-class Home extends Model<HomeAttributes> implements HomeAttributes {
-  public id!: number;
-  public street!: string;
-  public city!: string;
-  public state!: string;
-  public zipcode!: string;
-  public squareFootage!: number;
-  public yearBuilt!: number | null;
-  public numberBathrooms!: number;
-  public numberBedrooms!: number;
-  public userId!: number | null;
-}
+class Home extends Model<HomeAttributes> {}
 
 Home.init(
   {
@@ -57,7 +46,7 @@ Home.init(
     },
     squareFootage: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         notEmpty: true,
         isInt: true,
@@ -70,7 +59,7 @@ Home.init(
     },
     numberBathrooms: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         notEmpty: true,
         isInt: true,
@@ -79,7 +68,7 @@ Home.init(
     },
     numberBedrooms: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         notEmpty: true,
         isInt: true,

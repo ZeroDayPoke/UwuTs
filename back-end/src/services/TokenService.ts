@@ -48,33 +48,71 @@ export default class TokenService {
   }
 
   static async validateEmailVerificationToken(token: string): Promise<number> {
-    return this._validateToken(token, "email-verification");
+    try {
+      const tokenData = await Token.findOne({
+        where: {
+          token: token,
+          type: "email-verification",
+          expiration: {
+            [Op.gte]: new Date(),
+          },
+        },
+      });
+      if (!tokenData) {
+        throw new ValidationError("Invalid or expired token");
+      }
+      return tokenData.userId;
+    } catch (e) {
+      throw new ValidationError("Invalid or expired token");
+    }
   }
 
   static async validatePasswordResetToken(token: string): Promise<number> {
-    return this._validateToken(token, "password-reset");
+    try {
+      const tokenData = await Token.findOne({
+        where: {
+          token: token,
+          type: "password-reset",
+          expiration: {
+            [Op.gte]: new Date(),
+          },
+        },
+      });
+      if (!tokenData) {
+        throw new ValidationError("Invalid or expired token");
+      }
+      return tokenData.userId;
+    } catch (e) {
+      throw new ValidationError("Invalid or expired token");
+    }
   }
 
-  static async generateEmailVerificationToken(userId: number): Promise<string> {
+  static async generateEmailVerificationToken(userId: number): Promise<Token> {
     const token = crypto.randomBytes(20).toString("hex");
-    await Token.create({
-      userId,
-      token,
-      type: "email-verification",
-      expiration: new Date(Date.now() + ms(EMAIL_VERIFICATION_TOKEN_EXPIRY)),
-    });
-    return token;
+    try {
+      return await Token.create({
+        userId,
+        token,
+        type: "email-verification",
+        expiration: new Date(Date.now() + ms(EMAIL_VERIFICATION_TOKEN_EXPIRY)),
+      });
+    } catch (e) {
+      throw new ServerError("Failed to generate email verification token");
+    }
   }
 
-  static async generatePasswordResetToken(userId: number): Promise<string> {
+  static async generatePasswordResetToken(userId: number): Promise<Token> {
     const token = crypto.randomBytes(20).toString("hex");
-    await Token.create({
-      userId,
-      token,
-      type: "password-reset",
-      expiration: new Date(Date.now() + ms(PASSWORD_RESET_TOKEN_EXPIRY)),
-    });
-    return token;
+    try {
+      return await Token.create({
+        userId,
+        token,
+        type: "password-reset",
+        expiration: new Date(Date.now() + ms(PASSWORD_RESET_TOKEN_EXPIRY)),
+      });
+    } catch (e) {
+      throw new ServerError("Failed to generate password reset token");
+    }
   }
 
   static async _refreshToken(token: string): Promise<string> {
@@ -87,12 +125,11 @@ export default class TokenService {
   }
 
   static async _validateToken(token: string, type: string): Promise<number> {
-    const foundToken = await Token.findOne({
-      where: { token, type, expiration: { [Op.gt]: new Date() } },
-    });
-    if (!foundToken || !foundToken.userId) {
+    try {
+      const payload = await this._verifyJwt(token);
+      return payload.id;
+    } catch (e) {
       throw new ValidationError("Invalid or expired token");
     }
-    return foundToken.userId;
   }
 }

@@ -41,7 +41,12 @@ class EmailService {
       text: `Please verify your email by clicking the following link: https://tulsahomesales.com/verify_account_email/${token}`,
     };
 
-    await this.sendEmail(mailOptions);
+    try {
+      await this.sendEmail(mailOptions);
+    } catch (error) {
+      logger.error(`Error sending email: ${error}`);
+      throw error;
+    }
   }
 
   static async sendResetPasswordEmail(
@@ -54,8 +59,12 @@ class EmailService {
       subject: "Password Reset Request",
       text: `You have requested to reset your password. Please click the following link to reset your password: https://tulsahomesales.com/reset-password?token=${token}`,
     };
-
-    await this.sendEmail(mailOptions);
+    try {
+      await this.sendEmail(mailOptions);
+    } catch (error) {
+      logger.error(`Error sending email: ${error}`);
+      throw error;
+    }
   }
 }
 

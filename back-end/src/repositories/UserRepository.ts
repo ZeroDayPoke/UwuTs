@@ -29,17 +29,21 @@ class UserRepository {
   }
 
   async findByToken(token: string, tokenType: string): Promise<User | null> {
-    const tokenRecord = await Token.findOne({
-      where: {
-        token: token,
-        type: tokenType,
-        expiration: { [Op.gt]: new Date() },
-      },
-    });
+    try {
+      const tokenRecord = await Token.findOne({
+        where: {
+          token: token,
+          type: tokenType,
+          expiration: { [Op.gt]: new Date() },
+        },
+      });
 
-    if (!tokenRecord) return null;
+      if (!tokenRecord) return null;
 
-    return this.findById(tokenRecord.userId);
+      return this.findById(tokenRecord.userId);
+    } catch (err) {
+      logger.error(err.message);
+    }
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -53,6 +57,11 @@ class UserRepository {
   }
 
   async findAll(): Promise<User[]> {
+    try {
+      return await User.findAll();
+    } catch (err) {
+      logger.error(err.message);
+    }
     return User.findAll({
       attributes: ["id", "name", "email"],
       include: [Role],
@@ -60,10 +69,22 @@ class UserRepository {
   }
 
   async updateUserById(id: number, userData: any): Promise<void> {
+    try {
+      logger.info(
+        `Updating user with id ${id} with params ${JSON.stringify(userData)}`
+      );
+    } catch (err) {
+      logger.error(err.message);
+    }
     await User.update(userData, { where: { id } });
   }
 
   async deleteUserById(id: number): Promise<void> {
+    try {
+      logger.info(`Deleting user with id ${id}`);
+    } catch (err) {
+      logger.error(err.message);
+    }
     await User.destroy({ where: { id } });
   }
 }
